@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "clean": "npm start -- --reset-cache",
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
@@ -15,8 +16,7 @@
     "react-native-contacts-wrapper": "https://github.com/gevorg94/react-native-contacts-wrapper.git",
     "react-native-device-info": "^0.13.0",
     "react-native-firebase": "^3.1.1",
-    "react-native-navigation": "^1.1.309",
-    "validator": "^9.2.0"
+    "react-native-navigation": "^1.1.309"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",
