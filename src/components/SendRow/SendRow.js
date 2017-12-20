@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import { AutoGrowInput } from 'AppComponents';
-import { DARK_GRAY, BLUE } from 'AppColors';
+import { DARK_GRAY } from 'AppColors';
 import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
 
 const styles = StyleSheet.create({
@@ -10,15 +10,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(250, 250, 250, 0.95)',
+    backgroundColor: 'white',
   },
   input: {
     alignSelf: 'center',
     flex: 1,
-    borderRadius: 6,
-    borderColor: 'rgba(15, 15, 15, 1)',
     backgroundColor: 'white',
-    borderWidth: 1 / 4,
     paddingLeft: 10,
     paddingRight: 10,
     paddingTop: 8,
@@ -114,7 +111,7 @@ export class SendRow extends Component {
           ref={ref => this._textInputRef = ref}
           underlineColorAndroid={'transparent'}
           onEndEditing={() => this.props.onEndEditing()}
-          placeholder="Type a message..."
+          placeholder="Write a message..."
           minHeight={30}
           style={[styles.input, textInputStyle]}
           onChangeText={this.changeText}

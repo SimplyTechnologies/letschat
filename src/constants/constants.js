@@ -1,22 +1,11 @@
-import { Dimensions, LayoutAnimation, StatusBar, Platform } from 'react-native';
-import { isEmail, isMobilePhone } from 'validator';
-
+import { Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
-const isIOS = Platform.OS === 'ios';
 
 
 export const WINDOW_WIDTH = width;
 export const WINDOW_HEIGHT = height;
-export const STATUSBAR_HEIGHT = isIOS ? 20 : StatusBar.currentHeight;
-// default ios navigation bar height
-export const NAVBAR_HEIGHT = isIOS ? 44 : WINDOW_HEIGHT * 0.066;
-
-export const VALIDATIONS = {
-  required: (message = 'Required') => value => !value && message,
-  email: (message = 'Invalid email') => value => value && !isEmail(value) && message,
-  phone: (locale = 'en-US', message = 'Invalid phone') =>
-    value => value && !isMobilePhone(value, locale) && message,
-};
+export const STATUSBAR_HEIGHT = 20;
+export const NAVBAR_HEIGHT = 44;
 
 export const SEND_ROW_DEFAULT_HEIGHT = 60;
 

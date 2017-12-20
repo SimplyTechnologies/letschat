@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
-import { GRAY, GREEN, WHITE, HUE_GRAY } from 'AppColors';
+import { GRAY, HUE_GRAY } from 'AppColors';
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from 'AppConstants';
 
 const styles = StyleSheet.create({

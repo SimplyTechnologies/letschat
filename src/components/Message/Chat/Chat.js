@@ -1,14 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View, Image, StyleSheet, Text } from 'react-native';
-import { GRAY } from 'AppColors';
+import { GRAY, LIGHT_BLUE, LIGHTER_BLUE } from 'AppColors';
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from 'AppConstants';
 import moment from 'moment';
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
   container: {
     overflow: 'visible',
     width: WINDOW_WIDTH,
@@ -16,17 +13,11 @@ const styles = StyleSheet.create({
   margin: {
     marginVertical: 10,
   },
-  row: {
-    flexDirection: 'row',
-  },
-  column: {
-    flexDirection: 'column',
-  },
   text: {
-    color: 'red',
+    color: 'black',
   },
-  title: {
-    color: 'blue',
+  ownText: {
+    color: 'white',
   },
   right: {
     justifyContent: 'flex-end',
@@ -41,7 +32,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   message: {
-    backgroundColor: 'lightblue',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     padding: 10,
@@ -50,9 +40,11 @@ const styles = StyleSheet.create({
   },
   messageLeft: {
     borderBottomRightRadius: 10,
+    backgroundColor: LIGHTER_BLUE,
   },
   messageRight: {
     borderBottomLeftRadius: 10,
+    backgroundColor: LIGHT_BLUE,
   },
   date: {
     alignSelf: 'center',
@@ -73,7 +65,7 @@ const styles = StyleSheet.create({
   arrowRight: {
     width: 20,
     height: 10,
-    tintColor: 'lightblue',
+    tintColor: LIGHT_BLUE,
     alignSelf: 'flex-end',
     marginLeft: -5,
     marginRight: 5,
@@ -81,7 +73,7 @@ const styles = StyleSheet.create({
   arrowLeft: {
     width: 20,
     height: 10,
-    tintColor: 'lightblue',
+    tintColor: LIGHTER_BLUE,
     alignSelf: 'flex-end',
     marginLeft: 5,
     marginRight: -5,
@@ -112,7 +104,7 @@ export function Chat({
           />
         )}
         <View style={[styles.message, isOwn ? styles.messageRight: styles.messageLeft]}>
-          <Text style={styles.text}>
+          <Text style={[isOwn ? styles.ownText : styles.text]}>
             {room.text}
           </Text>
         </View>

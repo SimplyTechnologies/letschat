@@ -1,4 +1,3 @@
-import { AsyncStorage } from 'react-native';
 import firebase from 'react-native-firebase';
 import DeviceInfo from 'react-native-device-info'; 
 
@@ -7,14 +6,7 @@ class Firebase {
 
     firebaseApp = () => {
       if (!Firebase.app) {
-        console.log('init', Firebase.app);
-        const firebaseConfig = {
-          apiKey: "AIzaSyCpTQM8s7T8VszSt_Rm2Qe1SjCWoVNsuYQ",
-          authDomain: "lets-chat-dd894.firebaseapp.com",
-          databaseURL: "https://lets-chat-dd894.firebaseio.com",
-        };
         Firebase.app = firebase.app();
-        // Firebase.app = firebase.initializeApp(firebaseConfig);
       }
       return Firebase.app;
     };
@@ -63,14 +55,9 @@ class Firebase {
     };
 
     setUserInfo = (info) => {
-      this.firebaseApp().database().ref(`users/${DeviceInfo.getUniqueID()}`)
-      .set(info);
-      return new Promise((resolve, reject) => {
-        const data = { ...info, id: DeviceInfo.getUniqueID() };
-        AsyncStorage.setItem('user', JSON.stringify(data))
-        .then(() => resolve(data))
-        .catch((err) => reject(err));
-      });
+      const id = DeviceInfo.getUniqueID();
+      this.firebaseApp().database().ref(`users/${id}`).set(info);
+      return Promise.resolve({ ...info, id });
     };
 
     getOwnUser = () => {
@@ -78,7 +65,6 @@ class Firebase {
         this.firebaseApp().database().ref(`users/${DeviceInfo.getUniqueID()}`)
         .once('value', (snapshot) => {
           const val = snapshot.val();
-          console.log('own', val);
           if (!val) {
             return reject();
           }
@@ -113,15 +99,12 @@ class Firebase {
       const userIds = contacts.map(contact => contact.id);
       userIds.push(DeviceInfo.getUniqueID());
       userIds.forEach(id => {
-        const ref = this.firebaseApp().database().ref(`users/${id}/roomIds`)
-        .push();
-        ref.set(roomId)
+        this.firebaseApp().database().ref(`users/${id}/roomIds/${roomId}`).set(true);
       });
     };
 
     signOut = () => {
       Firebase.app.auth().signOut();
-      AsyncStorage.removeItem('user');
     };
 }
 

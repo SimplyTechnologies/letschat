@@ -10,16 +10,21 @@ import {
 } from 'react-native';
 import { Chat, SendRow } from 'AppComponents';
 import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
+import { BACKGROUND_GRAY } from 'AppColors';
 import firebase from 'Firebase'; 
 import DeviceInfo from 'react-native-device-info'; 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: BACKGROUND_GRAY,
   },
   transform: {
     transform: [{ scaleY: -1 }]
   },
+  list: {
+    backgroundColor: 'transparent',
+  }
 });
 
 class ChatContainer extends Component {
@@ -39,22 +44,71 @@ class ChatContainer extends Component {
         users: props.room ? props.room.users : [],
       };
 
+      this.messages = [];
       this.messagesRef = this.state.roomId ? firebase.messagesRef(this.state.roomId) : null;
       this.sendRowRef = null;
 
-      this.addListeners();
+      // this.addListeners();
+      this.getInitialMessages()
     }
 
     componentWillUnmount() {
       if (this.messagesRef) {
-        this.messagesRef.off('value', this.onMessageChange);
+        this.messagesRef.off();
       }
     }
 
     addListeners = () => {
-      if (this.messagesRef) {
-        this.messagesRef.on('value', this.onMessageChange);
+      if (!this.messagesRef) {
+        return;
       }
+      this.messagesRef.on('child_removed', this.onMessageRemoved);
+      if (this.messages.length === 0) {
+        this.messagesRef.on('child_added', this.onMessageAdded);
+        return;
+      }
+      const date = this.state.messages[0].created;
+      this.messagesRef.orderByChild('created').startAt(date).on('child_added', this.onMessageAdded);
+    };
+
+    onMessageAdded = (snapshot) => {
+      const val = snapshot.val();
+      if (!val) {
+        return;
+      }
+      const message = { ...val, id: snapshot.key };
+      const contains = this.messages.some((msg => msg.id === message.id));
+      if (!contains) {
+        this.messages.unshift(message);
+        this.setState({ messages: Object.assign([], this.messages) });
+      }
+    };
+
+    onMessageRemoved = (snapshot) => {
+      const val = snapshot.val();
+      if (!val) {
+        return;
+      }
+      const message = { ...val, id: snapshot.key };
+      const contains = this.messages.some((msg => msg.id === message.id));
+      if (contains) {
+        this.messages = this.messages.filter(msg => msg.id !== message.id);
+        this.setState({ messages: this.messages });
+      }
+    };
+
+    getInitialMessages = () => {
+      if (!this.messagesRef) {
+        return;
+      }
+      this.messagesRef.once('value', (snapshot) => {
+        this.messages = [];
+        snapshot.forEach((child) =>
+          this.messages.unshift({ ...child.val(), id: child.key })
+        );
+        this.setState({ messages: this.messages });
+        this.addListeners();
+      });
     };
 
     getUsers = (room) => {
@@ -87,6 +141,7 @@ class ChatContainer extends Component {
       snapshot.forEach((child) =>
         items.push({ ...child.val(), id: child.key })
       );
+      console.log('items', items.length);
       this.setState({ messages: items.reverse() });
     };
 
@@ -178,7 +233,7 @@ class ChatContainer extends Component {
             keyboardVerticalOffset={SEND_ROW_DEFAULT_HEIGHT}
           >
             <FlatList
-              style={styles.transform}
+              style={[styles.list, styles.transform]}
               data={this.state.messages}
               renderItem={this.renderRow}
               keyExtractor={this.extractKeys}

@@ -15,22 +15,27 @@ import ContactsWrapper from 'react-native-contacts-wrapper';
 import firebase from 'Firebase'; 
 import { startLoginScene } from 'AppNavigator';
 import { getTitleFromUsers } from 'AppUtilities';
-import DeviceInfo from 'react-native-device-info';
+import { BACKGROUND_GRAY } from 'AppColors';
+import { isEmpty, xor } from 'lodash';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightgray',
+    backgroundColor: BACKGROUND_GRAY,
   },
   row: {
     width: WINDOW_WIDTH,
     height: 60,
+  },
+  list: {
+    backgroundColor: 'transparent',
   }
 });
 
 class MessageContainer extends Component {
     static propTypes = {
       navigator: PropTypes.object,
+      user: PropTypes.object,
     };
 
     constructor(props, context) {
@@ -42,11 +47,22 @@ class MessageContainer extends Component {
       this.messages = [];
       this.userRef = firebase.userRef();
       this.roomRefs = [];
-      this.getInitialRooms();
+      this.isRequestingContacts = false;
+      this.selectedContacts = [];
     }
 
     componentWillMount() {
       this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
+
+      firebase.getOwnUser()
+      .then(user => {
+        this.setState({ user });
+        return this.getInitialRooms(user);
+      })
+      .catch((err) => {
+        console.warn('Error retrieving rooms', err);
+      })
+      .finally(() => this.addUserListener());
     }
 
     componentWillUnmount() {
@@ -58,62 +74,70 @@ class MessageContainer extends Component {
       });
     }
 
+    onNavigatorEvent = (event) => {
+      switch (event.type) {
+      case 'NavBarButtonPress':
+        if (event.id === 'add') {
+          this.showContactsModal();
+          return
+        }
+        if (event.id === 'cancel') {
+          firebase.signOut();
+          startLoginScene();
+        }
+        break;
+      case 'ScreenChangedEvent':
+        if (event.id === 'didAppear' && this.isRequestingContacts) {
+          this.startChatIfNeeded(this.selectedContacts);
+          this.isRequestingContacts = false;
+        }
+        break;
+      default:
+        break;
+      }
+    };
+
     addUserListener = () => {
       this.userRef.on('value', this.onUserChange);
     };
 
-    getInitialRooms = () => {
-      firebase.getOwnUser()
-      .then(user => {
-        this.setState({ user });
+    getInitialRooms = (user) => {
+      if (!user.roomIds) {
+        return Promise.resolve();
+      }
 
-        if (!user.roomIds) {
-          this.addUserListener();
-          return;
-        }
+      const roomIds = Object.keys(user.roomIds);
+      const promises = [];
 
-        const roomIds = [];
-        Object.keys(user.roomIds).forEach(key => roomIds.push(user.roomIds[key]));
-        const promises = [];
-
-        roomIds.forEach(roomId => {
-          const ref = { id: roomId, roomRef: firebase.roomsRef(roomId) };
-          if (this.roomRefs.some(_ref => _ref.id === ref.id)) {
-            return;
-          }
-          this.roomRefs.push(ref);
-
-          const promise = new Promise((resolve, reject) => {
-            ref.roomRef.on('value', (snapshot) => {
-              const val = snapshot.val();
-              const room = { ...snapshot.val(), id: snapshot.key };
-              this.getRoomUsers(room)
-              .then(users => room.users = users)
-              .then(() => this.getMessageById(room.messageId, room.lastMessage))
-              .then(lastMessage => {
-                room.message = lastMessage;
-                return resolve(room);
-              });
+      roomIds.forEach(roomId => {
+        const ref = { id: roomId, roomRef: firebase.roomsRef(roomId) };
+        const promise = new Promise((resolve, reject) => {
+          ref.roomRef.once('value', (snapshot) => {
+            const val = snapshot.val();
+            if (!val) {
+              return resolve(null);
+            }
+            const room = { ...snapshot.val(), id: snapshot.key };
+            this.getRoomUsers(room)
+            .then(users => room.users = users)
+            .then(() => this.getMessageById(room.messageId, room.lastMessage))
+            .then(lastMessage => {
+              room.message = lastMessage;
+              return resolve(room);
             });
           });
-
-          promises.push(promise);
         });
 
-        // Now start listening to user's rooms change
-        this.addUserListener();
+        promises.push(promise);
+      });
 
-        Promise.all(promises)
-        .then(rooms => {
-          this.messages = rooms.sort((a, b) => {
-            return new Date(b.updated) - new Date(a.updated);
-          });
-          this.setState({ messages: this.messages });
+
+      return Promise.all(promises)
+      .then(rooms => {
+        this.messages = rooms.filter(room => !!room).sort((a, b) => {
+          return new Date(b.updated) - new Date(a.updated);
         });
-      })
-      .catch((err) => {
-        console.warn('Error retrieving rooms', err);
-        this.addUserListener();
+        this.setState({ messages: this.messages });
       });
     };
 
@@ -130,9 +154,18 @@ class MessageContainer extends Component {
     };
 
     updateRoomIfNeeded = (snapshot) => {
-      const val = snapshot.val();
-      const existingRoom = this.messages.find(message => message.id === val.id );
+      const val = snapshot.val();      
+      if (!val) { // Room has been removed.
+        const roomId = snapshot.key;
+        this.messages = this.messages.filter(room => room.id !== roomId);
+        return this.setState({ messages: Object.assign([], this.messages)});
+      }
+
+      const existingRoom = this.messages.find(message => message.id === val.id);
       if (existingRoom) {
+        if (!this.isRoomChanged(existingRoom, val)) {
+          return;
+        }
         return this.getMessageById(val.messageId, val.lastMessage)
         .then(lastMessage => {
 
@@ -155,25 +188,33 @@ class MessageContainer extends Component {
       .then(lastMessage => {
         room.message = lastMessage;
         this.messages.push(room);
-        this.messages = this.messages.sort((a, b) => {
+        this.messages = messages.sort((a, b) => {
           return new Date(b.updated) - new Date(a.updated);
         });
-        this.setState({ messages: this.messages });
+        this.setState({ messages: Object.assign([], this.messages) });
       });
     };
 
+    isRoomChanged = (oldRoom, newRoom) => {
+      return oldRoom.lastMessage !== newRoom.lastMessage;
+    };
+
     getMessageById = (roomId, messageId) => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         firebase.messagesRef().child(roomId).child(messageId)
         .once('value', snapshot => {
-          return resolve(snapshot.val());
+          const val = snapshot.val();
+          if (!val) {
+            return reject();
+          }
+          return resolve(val);
         });
       });
     };
 
     getRoomUsers = (room) => {
       if (!room.participants) {
-        return;
+        return Promise.resolve([]);
       }
       const promises = [];
       room.participants.forEach(user => {
@@ -201,24 +242,11 @@ class MessageContainer extends Component {
       if (!user.roomIds) {
         return;
       }
-      const roomIds = [];
-      Object.keys(user.roomIds).forEach(key => roomIds.push(user.roomIds[key]));
+      const roomIds = Object.keys(user.roomIds);
       const newRooms = roomIds.filter(room => !this.roomRefs.some(_ref => _ref.id === room));
       newRooms.forEach(id => {
         this.addRoomListener(id);
       });
-    };
-
-    onNavigatorEvent = (event) => {
-      if (event.type === 'NavBarButtonPress') {        
-        if (event.id === 'add') {
-          return this.showContactsModal();
-        }
-        if (event.id === 'cancel') {
-          firebase.signOut();
-          startLoginScene();
-        }
-      }
     };
 
     startChatIfNeeded = (contacts) => {
@@ -251,7 +279,11 @@ class MessageContainer extends Component {
         });
         if (notExistinigContacts.length === 0) {
           const title = getTitleFromUsers(users.map(user => user.name));
-          return this.routeToChat(title, { contacts: users, user: this.state.user });
+          const room = this.checkIfChatExists(users);
+          if (!room) {
+            return this.routeToChat(title, { contacts: users, user: this.state.user });
+          }
+          return this.onMessagePress(room);
         }
 
         AlertIOS.alert(
@@ -263,22 +295,32 @@ class MessageContainer extends Component {
       .catch(err => console.warn('Error checking contacts', err));
     };
 
+    checkIfChatExists = (users) => {
+      const contains = (participants, _users) => (
+        isEmpty(xor(participants, _users))
+      );
+
+      var existingRoom = null;
+      this.messages.forEach(room => {
+        const participants = room.participants.filter(par => par !== this.props.user.id);
+        const _users = users.map(user => user.id);
+        if (contains(participants, _users)) {
+          existingRoom = room;
+        }
+      });
+      return existingRoom;
+    };
+
     showContactsModal = () => {
+      this.isRequestingContacts = true;
       ContactsWrapper.getContact()
       .then((contacts) => {
-        // Since contacts controller is not disappeared yet,
-        // this is hack to route new scene properly.
-        // TODO fix it on native side.
-        setTimeout(() => {
-          console.log(contacts);
-          if (contacts.length === 0) {
-            return;
-          }
-          this.startChatIfNeeded(contacts);
-        }, 1000);
+        console.log('Contacts', contacts);
+        this.selectedContacts = contacts;
       })
       .catch(err => {
         console.warn('Error selecting contact:', err);
+        this.isRequestingContacts = false;
       });
     };
 
@@ -323,6 +365,7 @@ class MessageContainer extends Component {
             data={messages}
             renderItem={this.renderRow}
             keyExtractor={this.extractKeys}
+            style={styles.list}
           />
         </View>
       );

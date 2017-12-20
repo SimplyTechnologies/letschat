@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, AsyncStorage } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { startLoginScene, startApp } from 'AppNavigator';
 import firebase from 'Firebase'; 
 
@@ -13,12 +13,8 @@ class SplashScreen extends Component {
 
   componentWillMount() {
     firebase.isAuthenticated()
-    .then(() => {
-      AsyncStorage.getItem('user')
-      .then(user => {
-        startApp({ user: JSON.parse(user) });
-      });
-    })
+    .then(() => firebase.getOwnUser())
+    .then((user) => startApp({ user }))
     .catch(() => startLoginScene());
   }
 

@@ -4,31 +4,23 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   View,
-  Image,
   StyleSheet,
   Text,
 } from 'react-native';
-import { GRAY, GREEN, WHITE, HUE_GRAY } from 'AppColors';
+import { GRAY, WHITE, HUE_GRAY } from 'AppColors';
 import { WINDOW_WIDTH, WINDOW_HEIGHT } from 'AppConstants';
 
 const styles = StyleSheet.create({
-  wrap: {
-    flex: 1,
-    marginLeft: 15,
-  },
   flex: {
     flex: 1,
   },
   container: {
-    backgroundColor: 'white',
+    backgroundColor: WHITE,
     overflow: 'visible',
     width: WINDOW_WIDTH,
   },
   margin: {
     marginVertical: 10,
-  },
-  center: {
-    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',
@@ -41,17 +33,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 23,
   },
-  lastMessageView: {
-    flex: 1
-  },
   title: {
     color: 'blue',
+    fontSize: 11,
   },
   content: {
     borderBottomWidth: 1,
     borderBottomColor: HUE_GRAY,
     paddingLeft: 15,
-    backgroundColor: 'white',
+    backgroundColor: WHITE,
   }
 });
 

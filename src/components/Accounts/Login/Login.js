@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { NAVBAR_HEIGHT, WINDOW_WIDTH } from 'AppConstants';
 import { ActionButton } from 'AppButtons';
-import { BLUE, LIGHT_GRAY, GRAY } from 'AppColors';
+import { LIGHT_BLUE, LIGHT_GRAY, GRAY } from 'AppColors';
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard';
 
 type Props = {
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     input: {
         backgroundColor: LIGHT_GRAY,
         textAlign: 'center',
+        fontWeight: 'bold',
     },
     button: {
         width: WINDOW_WIDTH * 3 / 4,
@@ -51,6 +52,14 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         borderWidth: 1,
         borderColor: GRAY,
+    },
+    signInButton: {
+      width: WINDOW_WIDTH * 3 / 4,
+      height: 50,
+      borderRadius: 25,
+      marginVertical: 10,
+      borderWidth: 1,
+      backgroundColor: LIGHT_BLUE,
     },
     countryButton: {
       width: WINDOW_WIDTH * 3 / 4,
@@ -71,6 +80,10 @@ const styles = StyleSheet.create({
     flex: {
       flex: 1,
     },
+    signInLabel: {
+      color: 'white',
+      fontWeight: 'bold',
+    }
 });
 
 export class Login extends React.Component<Props, State> {
@@ -114,7 +127,7 @@ export class Login extends React.Component<Props, State> {
       <TouchableWithoutFeedback style={styles.container} onPress={dismissKeyboard}>
         <View style={styles.container}>
           <TextInput
-            autoCapitalize="none"
+            autoCapitalize="words"
             autoCorrect={false}
             editable={true}
             onChangeText={text => this.onChangeText(text, 0)}
@@ -148,10 +161,10 @@ export class Login extends React.Component<Props, State> {
           />
           <ActionButton
             label="SIGN IN"
-            labelStyle={{ color: 'white' }}
+            labelStyle={styles.signInLabel}
             isActive = {true}
             onPress={this.handleSignInPress}
-            style={[styles.button, { backgroundColor: BLUE }]}
+            style={styles.signInButton}
         />
         </View>
       </TouchableWithoutFeedback>
