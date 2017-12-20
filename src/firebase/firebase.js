@@ -66,7 +66,7 @@ class Firebase {
         .once('value', (snapshot) => {
           const val = snapshot.val();
           if (!val) {
-            return reject();
+            return resolve(null);
           }
           return resolve({ ...val, id: snapshot.key });
         })

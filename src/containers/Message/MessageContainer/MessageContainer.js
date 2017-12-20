@@ -56,7 +56,7 @@ class MessageContainer extends Component {
 
       firebase.getOwnUser()
       .then(user => {
-        this.setState({ user });
+        this.setState({ user: user || this.state.user });
         return this.getInitialRooms(user);
       })
       .catch((err) => {
@@ -218,7 +218,7 @@ class MessageContainer extends Component {
       }
       const promises = [];
       room.participants.forEach(user => {
-        if (user === this.props.user.id) {
+        if (user === this.state.user.id) {
           return;
         }
         const promise = new Promise((resolve, reject) => {
@@ -302,7 +302,7 @@ class MessageContainer extends Component {
 
       var existingRoom = null;
       this.messages.forEach(room => {
-        const participants = room.participants.filter(par => par !== this.props.user.id);
+        const participants = room.participants.filter(par => par !== this.state.user.id);
         const _users = users.map(user => user.id);
         if (contains(participants, _users)) {
           existingRoom = room;

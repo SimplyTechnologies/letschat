@@ -85,7 +85,15 @@ export class LoginContainer extends React.Component<Props, State> {
         name: this.name,
         phone: this.phone,
       };
-      firebase.setUserInfo(info)
+      firebase.getOwnUser()
+      .then(user => {
+        if (!user) {
+          return firebase.setUserInfo(info)
+        }
+        const _user = { ... user };
+        delete _user.id;
+        return firebase.setUserInfo({ ..._user, ...info });
+      })
       .then((user) => startApp({ user }));
     })
     .catch(err => {

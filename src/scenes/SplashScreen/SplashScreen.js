@@ -14,7 +14,12 @@ class SplashScreen extends Component {
   componentWillMount() {
     firebase.isAuthenticated()
     .then(() => firebase.getOwnUser())
-    .then((user) => startApp({ user }))
+    .then((user) => {
+      if (user) {
+        return startApp({ user });
+      }
+      return startLoginScene();
+    })
     .catch(() => startLoginScene());
   }
 
