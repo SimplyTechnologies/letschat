@@ -11,7 +11,6 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
-import { Message } from 'AppComponents';
 import { WINDOW_WIDTH, NAVBAR_HEIGHT, STATUSBAR_HEIGHT, COUNTRIES } from 'AppConstants';
 import { HUE_GRAY } from 'AppColors';
 import { CountryCode } from './CountryCode';
@@ -51,11 +50,6 @@ class DialCodesModal extends Component {
       onPress: PropTypes.func,
       onClose: PropTypes.func,
     };
-  
-    constructor(props, context) {
-      super(props, context);
-     
-    }
 
     onClose = () => {
       this.props.onClose();
@@ -82,9 +76,7 @@ class DialCodesModal extends Component {
           animationType={'slide'}
         >
           <View style={styles.container} >
-            <View
-              style={styles.navbar}
-            >
+            <View style={styles.navbar} >
               <TouchableOpacity style={styles.closeButton} onPress={this.onClose} >
                 <Text>Close</Text>
               </TouchableOpacity >

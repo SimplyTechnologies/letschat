@@ -188,7 +188,7 @@ class MessageContainer extends Component {
       .then(lastMessage => {
         room.message = lastMessage;
         this.messages.push(room);
-        this.messages = messages.sort((a, b) => {
+        this.messages = this.messages.sort((a, b) => {
           return new Date(b.updated) - new Date(a.updated);
         });
         this.setState({ messages: Object.assign([], this.messages) });
@@ -250,7 +250,7 @@ class MessageContainer extends Component {
     };
 
     startChatIfNeeded = (contacts) => {
-      if (!contacts) {
+      if (isEmpty(contacts)) {
         return;
       }
       const notExistinigContacts = [];
@@ -277,7 +277,7 @@ class MessageContainer extends Component {
             notExistinigContacts.push(existingContacts[index]);
           }
         });
-        if (notExistinigContacts.length === 0) {
+        if (isEmpty(notExistinigContacts)) {
           const title = getTitleFromUsers(users.map(user => user.name));
           const room = this.checkIfChatExists(users);
           if (!room) {
@@ -315,11 +315,9 @@ class MessageContainer extends Component {
       this.isRequestingContacts = true;
       ContactsWrapper.getContact()
       .then((contacts) => {
-        console.log('Contacts', contacts);
         this.selectedContacts = contacts;
       })
       .catch(err => {
-        console.warn('Error selecting contact:', err);
         this.isRequestingContacts = false;
       });
     };

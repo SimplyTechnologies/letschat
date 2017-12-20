@@ -13,6 +13,7 @@ import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
 import { BACKGROUND_GRAY } from 'AppColors';
 import firebase from 'Firebase'; 
 import DeviceInfo from 'react-native-device-info'; 
+import { isEmpty } from 'lodash';
 
 const styles = StyleSheet.create({
   container: {
@@ -63,7 +64,7 @@ class ChatContainer extends Component {
         return;
       }
       this.messagesRef.on('child_removed', this.onMessageRemoved);
-      if (this.messages.length === 0) {
+      if (isEmpty(this.messages)) {
         this.messagesRef.on('child_added', this.onMessageAdded);
         return;
       }
@@ -141,7 +142,6 @@ class ChatContainer extends Component {
       snapshot.forEach((child) =>
         items.push({ ...child.val(), id: child.key })
       );
-      console.log('items', items.length);
       this.setState({ messages: items.reverse() });
     };
 

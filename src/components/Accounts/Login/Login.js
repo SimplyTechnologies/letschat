@@ -2,91 +2,76 @@
 
 import * as React from 'react';
 import {
-    View,
-    TouchableWithoutFeedback,
-    Image,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
+  View,
+  TouchableWithoutFeedback,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
-import { NAVBAR_HEIGHT, WINDOW_WIDTH } from 'AppConstants';
+import { WINDOW_WIDTH } from 'AppConstants';
 import { ActionButton } from 'AppButtons';
 import { LIGHT_BLUE, LIGHT_GRAY, GRAY } from 'AppColors';
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard';
 
 type Props = {
-  routeForgotPassword: Function,
-  feathers: Function,
-  togglePlay: Function,
   onCountryCodePress: Function,
   selectedCountry: object,
   handleSignIn: (code: string) => void,
 }
 
-type State = {
-  username: string,
-  password: string,
-  wrongPassword: boolean,
-  wrongUsername: boolean,
-  validatedUsername: boolean,
-}
-
-const ANIMATION_DURATION = 600;
-const ANIMATE_OUT_DURATION = 600;
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    input: {
-        backgroundColor: LIGHT_GRAY,
-        textAlign: 'center',
-        fontWeight: 'bold',
-    },
-    button: {
-        width: WINDOW_WIDTH * 3 / 4,
-        height: 50,
-        borderRadius: 25,
-        marginVertical: 10,
-        borderWidth: 1,
-        borderColor: GRAY,
-    },
-    signInButton: {
-      width: WINDOW_WIDTH * 3 / 4,
-      height: 50,
-      borderRadius: 25,
-      marginVertical: 10,
-      borderWidth: 1,
-      backgroundColor: LIGHT_BLUE,
-    },
-    countryButton: {
-      width: WINDOW_WIDTH * 3 / 4,
-      height: 50,
-      borderRadius: 25,
-      marginVertical: 10,
-      borderWidth: 1,
-      borderColor: GRAY,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: LIGHT_GRAY,
-    },
-    contryInput: {
-      width: WINDOW_WIDTH * 3 / 4,
-      height: 50,
-      textAlign: 'center',
-    },
-    flex: {
-      flex: 1,
-    },
-    signInLabel: {
-      color: 'white',
-      fontWeight: 'bold',
-    }
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    backgroundColor: LIGHT_GRAY,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  button: {
+    width: WINDOW_WIDTH * 3 / 4,
+    height: 50,
+    borderRadius: 25,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: GRAY,
+  },
+  signInButton: {
+    width: WINDOW_WIDTH * 3 / 4,
+    height: 50,
+    borderRadius: 25,
+    marginVertical: 10,
+    borderWidth: 1,
+    backgroundColor: LIGHT_BLUE,
+  },
+  countryButton: {
+    width: WINDOW_WIDTH * 3 / 4,
+    height: 50,
+    borderRadius: 25,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: GRAY,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: LIGHT_GRAY,
+  },
+  contryInput: {
+    width: WINDOW_WIDTH * 3 / 4,
+    height: 50,
+    textAlign: 'center',
+  },
+  flex: {
+    flex: 1,
+  },
+  signInLabel: {
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });
 
-export class Login extends React.Component<Props, State> {
+class Login extends React.Component<Props, State> {
 
   constructor(props: Props, context: mixed) {
     super(props, context);
@@ -106,7 +91,7 @@ export class Login extends React.Component<Props, State> {
       default:
         break;
     }
-  }
+  };
 
   handleSignInPress = () => {
     const data = {
@@ -114,7 +99,7 @@ export class Login extends React.Component<Props, State> {
       phone: this.phone
     };
     this.props.handleSignIn(data);
-  }
+  };
 
   render() {
     const { selectedCountry, onCountryCodePress } = this.props;
@@ -171,3 +156,5 @@ export class Login extends React.Component<Props, State> {
     );
   }
 }
+
+export default Login;

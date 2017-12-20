@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
 });
 
 
-export class SendRow extends Component {
+class SendRow extends Component {
   static propTypes = {
     insertMessage: PropTypes.func.isRequired,
     onBlur: PropTypes.func,
@@ -136,3 +136,5 @@ export class SendRow extends Component {
     );
   }
 }
+
+export default SendRow;
