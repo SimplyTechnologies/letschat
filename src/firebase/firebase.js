@@ -1,5 +1,4 @@
 import firebase from 'react-native-firebase';
-import DeviceInfo from 'react-native-device-info'; 
 
 class Firebase {
     static app = null;
@@ -25,13 +24,6 @@ class Firebase {
       return this.firebaseApp().database().ref(`messages/${path}`);
     };
 
-    userRef = (path) => {
-      if (!path) {
-        return this.firebaseApp().database().ref(`users/${DeviceInfo.getUniqueID()}`);
-      }
-      return this.firebaseApp().database().ref(`users/${DeviceInfo.getUniqueID()}/${path}`);
-    };
-
     usersRef = (path) => {
       if (!path) {
         return this.firebaseApp().database().ref('users');
@@ -55,25 +47,19 @@ class Firebase {
     };
 
     setUserInfo = (info) => {
-      const id = DeviceInfo.getUniqueID();
-      this.firebaseApp().database().ref(`users/${id}`).set(info);
-      return Promise.resolve({ ...info, id });
+      if (info.id) {
+        const data = { ...info };
+        delete data.id;
+        this.usersRef(info.id).set(data);
+        return Promise.resolve({ ...info });
+      }
+
+      const userRef = this.usersRef().push();
+      userRef.set(info);
+      return Promise.resolve({ ...info, id: userRef.key });
     };
 
-    getOwnUser = () => {
-      return new Promise((resolve, reject) => {
-        this.firebaseApp().database().ref(`users/${DeviceInfo.getUniqueID()}`)
-        .once('value', (snapshot) => {
-          const val = snapshot.val();
-          if (!val) {
-            return resolve(null);
-          }
-          return resolve({ ...val, id: snapshot.key });
-        })
-      });
-    };
-
-    checkUserExists = (phone) => {
+    getUserByPhoneNumber = (phone) => {
       return new Promise((resolve, reject) => {
         this.firebaseApp().database().ref('users')
         .orderByChild('phone')
@@ -95,10 +81,8 @@ class Firebase {
       });
     };
 
-    addRoomIdToUser = (roomId, contacts = []) => {
-      const userIds = contacts.map(contact => contact.id);
-      userIds.push(DeviceInfo.getUniqueID());
-      userIds.forEach(id => {
+    addRoomIdToUser = (roomId, users = []) => {
+      users.forEach(id => {
         this.firebaseApp().database().ref(`users/${id}/roomIds/${roomId}`).set(true);
       });
     };
