@@ -81,40 +81,45 @@ const styles = StyleSheet.create({
   },
 });
 
+function renderArrowImage(isLeft) {
+  if (isLeft) {
+    return (
+      <Image
+        resizeMode={'contain'}
+        style={styles.arrowLeft}
+        source={require('img/message/triangle.png')}
+      />
+    );
+  }
+  return (
+    <Image
+      resizeMode={'contain'}
+      style={styles.arrowRight}
+      source={require('img/message/triangle.png')}
+    />
+  );
+}
+
 export function Chat({
     style,
-    room,
+    message,
     isOwn,
     user,
 }) {
-  const title = (isOwn ? '' : user.name) + ' ' + moment(room.time).from(Date.now());
+  const title = (isOwn ? '' : user.name) + ' ' + moment(message.created).fromNow();
   return (
     <View style={[styles.container, styles.margin, style]} >
       <Text style={[isOwn ? styles.ownDate : styles.date]} numberOfLines={1}>
         {title}
       </Text>
-      <View
-        style={[styles.messageContainer, isOwn ? styles.right: styles.left]}
-      >
-        {!isOwn && (
-          <Image
-            resizeMode={'contain'}
-            style={styles.arrowLeft}
-            source={require('img/message/triangle.png')}
-          />
-        )}
-        <View style={[styles.message, isOwn ? styles.messageRight: styles.messageLeft]}>
+      <View style={[styles.messageContainer, isOwn ? styles.right: styles.left]} >
+        {!isOwn && renderArrowImage(true)}
+        <View style={[styles.message, isOwn ? styles.messageRight: styles.messageLeft]} >
           <Text style={[isOwn ? styles.ownText : styles.text]}>
-            {room.text}
+            {message.text}
           </Text>
         </View>
-        {isOwn && (
-          <Image
-            resizeMode={'contain'}
-            style={styles.arrowRight}
-            source={require('img/message/triangle.png')}
-          />
-        )}
+        {isOwn && renderArrowImage(false)}
       </View>
     </View>
   );
@@ -122,7 +127,7 @@ export function Chat({
 
 Chat.propTypes = {
   style: PropTypes.any,
-  room: PropTypes.object.isRequired,
+  message: PropTypes.object.isRequired,
   isOwn: PropTypes.bool,
   user: PropTypes.object,
 };

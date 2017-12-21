@@ -12,7 +12,6 @@ import { Chat, SendRow } from 'AppComponents';
 import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
 import { BACKGROUND_GRAY } from 'AppColors';
 import firebase from 'Firebase'; 
-import DeviceInfo from 'react-native-device-info'; 
 import { isEmpty } from 'lodash';
 
 const styles = StyleSheet.create({
@@ -178,7 +177,7 @@ class ChatContainer extends Component {
       const roomsRef = firebase.roomsRef();
       const participants = contacts.map(contact => contact.id);
 
-      participants.push(DeviceInfo.getUniqueID())
+      participants.push(this.props.user.id);
       let room = {
         created: Date.now(),
         updated: Date.now(),
@@ -196,7 +195,7 @@ class ChatContainer extends Component {
       room.id = newRoomRef.key;
       msg.id = messageRoomRef.key;
 
-      firebase.addRoomIdToUser(newRoomRef.key, contacts);
+      firebase.addRoomIdToUser(newRoomRef.key, participants);
 
       this.getUsers(room)
       .then(users => {
@@ -213,7 +212,7 @@ class ChatContainer extends Component {
       return (
         <Chat
           style={styles.transform}
-          room={item}
+          message={item}
           isOwn={isOwn}
           user={user}
         />

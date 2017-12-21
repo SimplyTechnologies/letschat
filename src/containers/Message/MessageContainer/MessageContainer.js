@@ -45,7 +45,7 @@ class MessageContainer extends Component {
         user: props.user || { },
       };
       this.messages = [];
-      this.userRef = firebase.userRef();
+      this.userRef = firebase.usersRef(this.state.user.id);
       this.roomRefs = [];
       this.isRequestingContacts = false;
       this.selectedContacts = [];
@@ -54,7 +54,7 @@ class MessageContainer extends Component {
     componentWillMount() {
       this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
 
-      firebase.getOwnUser()
+      firebase.getUserByPhoneNumber(this.state.user.phone)
       .then(user => {
         this.setState({ user: user || this.state.user });
         return this.getInitialRooms(user);
@@ -134,10 +134,7 @@ class MessageContainer extends Component {
 
       return Promise.all(promises)
       .then(rooms => {
-        this.messages = rooms.filter(room => !!room).sort((a, b) => {
-          return new Date(b.updated) - new Date(a.updated);
-        });
-        this.setState({ messages: this.messages });
+        this.setMessages(rooms.filter(room => !!room));
       });
     };
 
@@ -168,16 +165,13 @@ class MessageContainer extends Component {
         }
         return this.getMessageById(val.messageId, val.lastMessage)
         .then(lastMessage => {
-
           this.messages = this.messages.map(message => {
             if (message.id !== existingRoom.id) {
               return message;
             }
             return Object.assign({}, message, { message: lastMessage, updated: val.updated });
-          }).sort((a, b) => {
-            return new Date(b.updated) - new Date(a.updated);
           });
-          this.setState({ messages: this.messages });
+          this.setMessages(this.messages);
         });
       }
 
@@ -188,11 +182,21 @@ class MessageContainer extends Component {
       .then(lastMessage => {
         room.message = lastMessage;
         this.messages.push(room);
-        this.messages = this.messages.sort((a, b) => {
-          return new Date(b.updated) - new Date(a.updated);
-        });
-        this.setState({ messages: Object.assign([], this.messages) });
+        this.setMessages(this.messages)
       });
+    };
+
+    setMessages = (messages) => {
+      this.messages = messages.reduce((prevMessages, message) => {
+        if (prevMessages.some(msg => msg.id === message.id)) {
+          return prevMessages;
+        }
+        return prevMessages.concat(message);
+      }, [])
+      .sort((a, b) => {
+        return new Date(b.updated) - new Date(a.updated);
+      });
+      this.setState({ messages: this.messages });
     };
 
     isRoomChanged = (oldRoom, newRoom) => {
@@ -205,7 +209,7 @@ class MessageContainer extends Component {
         .once('value', snapshot => {
           const val = snapshot.val();
           if (!val) {
-            return reject();
+            return resolve({});
           }
           return resolve(val);
         });
@@ -254,7 +258,7 @@ class MessageContainer extends Component {
         return;
       }
       const notExistinigContacts = [];
-      const phoneNumbers = [];
+      var phoneNumbers = [];
       const existingContacts = [];
       contacts.forEach(contact => {
         if (!contact.phone) {
@@ -265,9 +269,18 @@ class MessageContainer extends Component {
         phoneNumbers.push(contact.phone.replace(/\s/g,''));
       });
 
+      // Remove own phone number
+      phoneNumbers = phoneNumbers.filter(num => num !== this.props.user.phone);
+      if (isEmpty(phoneNumbers)) {
+        return;
+      }
+
       const promises = [];
       phoneNumbers.forEach(phone => {
-        const promise = firebase.checkUserExists(phone);
+        if (phone === this.state.user.phone) {
+          return;
+        }
+        const promise = firebase.getUserByPhoneNumber(phone);
         promises.push(promise);
       });
       Promise.all(promises)
@@ -330,7 +343,7 @@ class MessageContainer extends Component {
     routeToChat = (title, passProps) => {
       this.props.navigator.push({
         screen: 'app.ChatScene',
-        title: title, 
+        title,
         passProps,
         animated: true,
         backButtonHidden: false,
@@ -342,7 +355,6 @@ class MessageContainer extends Component {
       const title = getTitleFromUsers(item.users.map(user => user.name));
       return (
         <Message
-          style={styles.row}
           room={item}
           onPress={this.onMessagePress}
           title={title}

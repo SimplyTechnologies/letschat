@@ -13,7 +13,7 @@ class SplashScreen extends Component {
 
   componentWillMount() {
     firebase.isAuthenticated()
-    .then(() => firebase.getOwnUser())
+    .then((state) => firebase.getUserByPhoneNumber(state.phoneNumber))
     .then((user) => {
       if (user) {
         return startApp({ user });
