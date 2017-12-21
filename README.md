@@ -41,11 +41,14 @@ To do this you'll need a Firebase project and a Firebase configuration file for 
 4. At the end, you'll download a `GoogleService-Info.plist` file. You can [download this file](https://support.google.com/firebase/answer/7015592) again at any time.
 5. If you haven't done so already, add this file to your Xcode project root using the `Add Files` utility in Xcode (From the `File` menu, click `Add Files`). Make sure the file is included in your app's build target.
 
-Visit [here](https://firebase.google.com/docs/ios/setup) for more information.
-
 6. Then you need to enable `Phone Authentication` in [Firebase console](https://console.firebase.google.com/) `Authentication` section.
 
 7. Open the `GoogleService-Info.plist` configuration file, and look for the `REVERSED_CLIENT_ID` key. Copy the value of that key, and paste it into the `Info.plist`'s `CFBundleURLSchemes`.
+<h1 align="center">
+  <img src="./readme_assets/info_plist.png"/><br>
+</h1>
+
+Visit [here](https://firebase.google.com/docs/ios/setup) for more information.
 
 
 If you run into issues starting the apps please refer to the [React Native docs](https://facebook.github.io/react-native/docs/getting-started.html). It's most likely a problem with your environment.
