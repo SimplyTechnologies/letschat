@@ -1,5 +1,5 @@
 # LetsChat
-A React Native example chat app using Firebase.
+A React Native example chat app using [Firebase](https://firebase.google.com/).
 
 ## Getting Started
 
