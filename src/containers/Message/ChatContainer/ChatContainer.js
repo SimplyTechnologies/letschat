@@ -201,7 +201,6 @@ class ChatContainer extends Component {
           });
           delete newRoom.message;
           delete newRoom.users;
-          delete newRoom.id;
           firebase.roomsRef(room.id).set(newRoom);
         }
         return;
