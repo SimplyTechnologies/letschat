@@ -14,7 +14,6 @@
     "react": "16.0.0",
     "react-native": "0.51.0",
     "react-native-contacts-wrapper": "https://github.com/gevorg94/react-native-contacts-wrapper.git",
-    "react-native-device-info": "^0.13.0",
     "react-native-firebase": "^3.1.1",
     "react-native-navigation": "^1.1.309"
   },

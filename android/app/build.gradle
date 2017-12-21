@@ -137,7 +137,6 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-device-info')
     compile project(':react-native-contacts-wrapper')
     compile project(':react-native-navigation')
     compile(project(':react-native-firebase')) {

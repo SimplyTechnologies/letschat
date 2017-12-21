@@ -21,8 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var jsCodeLocation: URL?
     #if DEBUG
 //      uncomment the next line for running on real device (set correct ip address)
-//      jsCodeLocation = NSURL(string:"http://192.168.2.93:8081/index.bundle?platform=ios&dev=true") as URL?
-      jsCodeLocation = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
+      jsCodeLocation = NSURL(string:"http://192.168.2.93:8081/index.bundle?platform=ios&dev=true") as URL?
+//      jsCodeLocation = RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     #else
       jsCodeLocation = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
