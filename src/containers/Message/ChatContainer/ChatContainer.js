@@ -8,7 +8,7 @@ import {
   FlatList,
   KeyboardAvoidingView
 } from 'react-native';
-import { Chat, SendRow } from 'AppComponents';
+import { Chat, SendRow, Loading } from 'AppComponents';
 import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
 import { BACKGROUND_GRAY } from 'AppColors';
 import firebase from 'Firebase'; 
@@ -24,6 +24,9 @@ const styles = StyleSheet.create({
   },
   list: {
     backgroundColor: 'transparent',
+  },
+  loading: {
+    marginTop: 10,
   }
 });
 
@@ -42,14 +45,17 @@ class ChatContainer extends Component {
         roomId: props.room ? props.room.messageId : null,
         room: props.room,
         users: props.room ? props.room.users : [],
+        loading: !!props.room,
       };
 
       this.messages = [];
       this.messagesRef = this.state.roomId ? firebase.messagesRef(this.state.roomId) : null;
       this.sendRowRef = null;
 
-      // this.addListeners();
-      this.getInitialMessages()
+      this.loading = false;
+      this.hasMoreToLoad = !!props.room;
+      this.listChunkSize = 20;
+      this.getInitialMessages();
     }
 
     componentWillUnmount() {
@@ -101,13 +107,44 @@ class ChatContainer extends Component {
       if (!this.messagesRef) {
         return;
       }
-      this.messagesRef.once('value', (snapshot) => {
+      this.messagesRef.orderByChild('created')
+      .limitToLast(this.listChunkSize)
+      .once('value', (snapshot) => {
         this.messages = [];
         snapshot.forEach((child) =>
           this.messages.unshift({ ...child.val(), id: child.key })
         );
-        this.setState({ messages: this.messages });
+        this.setState({ messages: this.messages, loading: false });
         this.addListeners();
+      });
+    };
+
+    getOldMessages = () => {
+      if (!this.messagesRef || isEmpty(this.state.messages) || this.loading || !this.hasMoreToLoad) {
+        return;
+      }
+      this.loading = true;
+      this.setState({ loading: true });
+      const lastMessage = this.state.messages[this.state.messages.length - 1];
+      this.messagesRef.orderByChild('created')
+      .endAt(lastMessage.created)
+      .limitToLast(this.listChunkSize + 1)
+      .once('value', (snapshot) => {
+        const messages = [];
+        snapshot.forEach((child) => {
+          messages.unshift({ ...child.val(), id: child.key })
+        });
+
+        this.messages = this.messages.concat(messages).reduce((prevMessages, current) => {
+          if (prevMessages.some(msg => msg.id === current.id)) {
+            return prevMessages;
+          }
+          return prevMessages.concat(current);
+        }, []);
+
+        this.hasMoreToLoad = messages.length > this.listChunkSize;
+        this.loading = false;
+        this.setState({ messages: this.messages, loading: false });
       });
     };
 
@@ -164,6 +201,7 @@ class ChatContainer extends Component {
           });
           delete newRoom.message;
           delete newRoom.users;
+          delete newRoom.id;
           firebase.roomsRef(room.id).set(newRoom);
         }
         return;
@@ -206,6 +244,15 @@ class ChatContainer extends Component {
       });
     };
 
+    renderFooter = () => {
+      const { loading } = this.state;
+      return (
+        <View >
+          {loading && <Loading style={styles.loading} />}
+        </View>
+      );
+    };
+
     renderRow = ({ item }) => {
       const isOwn = item.author === this.props.user.id;
       const user = this.state.users.find(user => user.id === item.author);
@@ -236,6 +283,9 @@ class ChatContainer extends Component {
               data={this.state.messages}
               renderItem={this.renderRow}
               keyExtractor={this.extractKeys}
+              ListFooterComponent={this.renderFooter}
+              onEndReached={this.getOldMessages}
+              onEndReachedThreshold={0.5}
             />
             <SendRow
               insertMessage={this.onSendMsg}

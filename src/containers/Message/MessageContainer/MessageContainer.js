@@ -265,12 +265,13 @@ class MessageContainer extends Component {
           notExistinigContacts.push(contact);
           return;
         }
-        existingContacts.push(contact);
-        phoneNumbers.push(contact.phone.replace(/\s/g,''));
+        const phone = contact.phone.replace(/\s/g,'');
+        if (phone !== this.props.user.phone) {
+          existingContacts.push(contact);
+          phoneNumbers.push(phone);
+        }
       });
 
-      // Remove own phone number
-      phoneNumbers = phoneNumbers.filter(num => num !== this.props.user.phone);
       if (isEmpty(phoneNumbers)) {
         return;
       }
