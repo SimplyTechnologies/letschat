@@ -44,7 +44,7 @@ class SendRow extends Component {
     onChangeText: PropTypes.func,
     onEndEditing: PropTypes.func,
     style: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
-    textInputStyle: View.propTypes.style,
+    textInputStyle: PropTypes.any,
     onFocus: PropTypes.func,
     initialValue: PropTypes.string,
   };
