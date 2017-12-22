@@ -94,17 +94,21 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 25
+    buildToolsVersion '27.0.2'
 
     defaultConfig {
-        applicationId "com.letschat"
+        applicationId "simplytechnologies.Chat.app"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_7
+            targetCompatibility JavaVersion.VERSION_1_7
         }
     }
     splits {
@@ -119,7 +123,19 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            ndk {
+                abiFilters "armabi-v7a", "armabi"
+            }
         }
+        debug {
+            ndk {
+                abiFilters "armabi-v7a", "armabi"
+            }
+        }
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
     }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -137,15 +153,22 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-contacts-wrapper')
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.android.support:appcompat-v7:25.3.1"
+    compile "com.facebook.react:react-native:+"  // From node_modules
     compile project(':react-native-navigation')
-    compile(project(':react-native-firebase')) {
+    compile project(':react-native-contacts-wrapper')
+
+    compile 'com.google.android.gms:play-services:11.8.0'
+    compile 'com.google.firebase:firebase-core:11.8.0'
+    compile 'com.google.firebase:firebase-database:11.8.0'
+    compile 'com.google.firebase:firebase-auth:11.8.0'
+    compile(project(':react-native-firebase')){
         transitive = false
     }
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
-    compile "com.facebook.react:react-native:+"  // From node_modules
 }
+
+apply plugin: 'com.google.gms.google-services'
 
 // Run this once to be able to run the application with BUCK
 // puts all compile dependencies into folder libs for BUCK to use

@@ -7,10 +7,16 @@ import {
   View,
   KeyboardAvoidingView,
   AlertIOS,
+  Platform,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import firebase from 'Firebase'; 
-import { Login, DialCodesModal } from 'AppComponents';
+import { Login, DialCodesModal, AlertPrompt } from 'AppComponents';
+import { WINDOW_WIDTH } from 'AppConstants';
 import { startApp } from 'AppNavigator';
+
+const isIOS = Platform.OS === 'ios';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,6 +35,7 @@ export class LoginContainer extends React.Component<Props, State> {
     this.state = {
       isModalVisible: false,
       selectedCountry: null,
+      isPromtVisible: false,
     };
 
     this.auth = null;
@@ -58,7 +65,10 @@ export class LoginContainer extends React.Component<Props, State> {
   }
 
   showAlert = () => {
-    AlertIOS.prompt(
+    if (!isIOS) {
+      return this.setState({ isPromtVisible: true });
+    }
+    return AlertIOS.prompt(
       'Verify',
       'Enter code you received via SMS',
       [
@@ -79,6 +89,11 @@ export class LoginContainer extends React.Component<Props, State> {
     if (!this.auth) {
       return;
     }
+
+    if (!isIOS) {
+      this.setState({ isPromtVisible: false });
+    }
+
     this.auth.confirm(code)
     .then(res => {
       const info = {
@@ -114,7 +129,7 @@ export class LoginContainer extends React.Component<Props, State> {
 
   render() {
     const { routeSignup, routeLogin, togglePlay } = this.props;
-    const { isModalVisible, selectedCountry } = this.state;
+    const { isModalVisible, selectedCountry, isPromtVisible } = this.state;
 
     return (
       <View style={styles.container} >
@@ -133,6 +148,15 @@ export class LoginContainer extends React.Component<Props, State> {
             visible={isModalVisible}
             onPress={this.onCountryCodeSelect}
             onClose={this.onModalClose}
+          />
+          <AlertPrompt
+            visible={isPromtVisible}
+            onCancel={() => this.setState({ isPromtVisible: false })}
+            onSubmit={this.confirm}
+            cancelText={'Cancel'}
+            submitText={'Go'}
+            title={'Verify'}
+            message={'Enter code you received via SMS'}
           />
         </KeyboardAvoidingView>
       </View>

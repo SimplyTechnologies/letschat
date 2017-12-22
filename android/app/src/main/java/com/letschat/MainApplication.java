@@ -1,49 +1,56 @@
 package com.letschat;
 
-import android.app.Application;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.WindowManager;
 
-import com.facebook.react.ReactApplication;
+import com.google.firebase.FirebaseApp;
 import com.lynxit.contactswrapper.ContactsWrapperPackage;
-import com.reactnativenavigation.NavigationReactPackage;
-import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.shell.MainReactPackage;
-import com.facebook.soloader.SoLoader;
+import com.reactnativenavigation.NavigationApplication;
+import com.reactnativenavigation.controllers.ActivityCallbacks;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class MainApplication extends Application implements ReactApplication {
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.auth.RNFirebaseAuthPackage;
+import io.invertase.firebase.database.RNFirebaseDatabasePackage;
 
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-    @Override
-    public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
-    }
-
-    @Override
-    protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new ContactsWrapperPackage(),
-            new NavigationReactPackage()
-      );
-    }
-
-    @Override
-    protected String getJSMainModuleName() {
-      return "index";
-    }
-  };
+public class MainApplication extends NavigationApplication {
 
   @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
+  public boolean isDebug() {
+    return BuildConfig.DEBUG;
+  }
+
+  protected List<ReactPackage> getPackages() {
+    return Arrays.<ReactPackage>asList(
+            new ContactsWrapperPackage(),
+            new RNFirebasePackage(),
+            new RNFirebaseAuthPackage(),
+            new RNFirebaseDatabasePackage()
+    );
+  }
+
+  @Override
+  public List<ReactPackage> createAdditionalReactPackages() {
+    return getPackages();
   }
 
   @Override
   public void onCreate() {
     super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
+
+    FirebaseApp.initializeApp(this);
+    FirebaseApp.getInstance().setAutomaticResourceManagementEnabled(true);
+
+    setActivityCallbacks(new ActivityCallbacks() {
+      @Override
+      public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        super.onActivityCreated(activity, savedInstanceState);
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+      }
+    });
   }
 }
