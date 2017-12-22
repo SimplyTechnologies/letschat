@@ -119,6 +119,7 @@ class Login extends React.Component<Props, State> {
             placeholder="name"
             placeholderTextColor={GRAY}
             style={[styles.input, styles.button]}
+            underlineColorAndroid={'transparent'}
           />
           <TouchableOpacity style={styles.countryButton} onPress={onCountryCodePress}>
             <View style={styles.flex} pointerEvents={'box-only'} >
@@ -131,6 +132,7 @@ class Login extends React.Component<Props, State> {
                 placeholderTextColor={GRAY}
                 style={styles.contryInput}
                 value={phone}
+                underlineColorAndroid={'transparent'}
               />
             </View >
           </TouchableOpacity>
@@ -143,6 +145,7 @@ class Login extends React.Component<Props, State> {
             placeholder="phone number"
             placeholderTextColor={GRAY}
             style={[styles.input, styles.button]}
+            underlineColorAndroid={'transparent'}
           />
           <ActionButton
             label="SIGN IN"

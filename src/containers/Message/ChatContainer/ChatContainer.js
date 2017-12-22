@@ -6,6 +6,7 @@ import {
   StyleSheet,
   View,
   FlatList,
+  Platform,
   KeyboardAvoidingView
 } from 'react-native';
 import { Chat, SendRow, Loading } from 'AppComponents';
@@ -13,6 +14,8 @@ import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
 import { BACKGROUND_GRAY } from 'AppColors';
 import firebase from 'Firebase'; 
 import { isEmpty } from 'lodash';
+
+const isIOS = Platform.OS === 'ios';
 
 const styles = StyleSheet.create({
   container: {
@@ -275,7 +278,7 @@ class ChatContainer extends Component {
           <KeyboardAvoidingView
             style={styles.container}
             behavior={'padding'}
-            keyboardVerticalOffset={SEND_ROW_DEFAULT_HEIGHT}
+            keyboardVerticalOffset={isIOS ? SEND_ROW_DEFAULT_HEIGHT : -600}
           >
             <FlatList
               style={[styles.list, styles.transform]}

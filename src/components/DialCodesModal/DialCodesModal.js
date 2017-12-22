@@ -74,6 +74,7 @@ class DialCodesModal extends Component {
         <Modal
           visible={visible}
           animationType={'slide'}
+          onRequestClose={() => null}
         >
           <View style={styles.container} >
             <View style={styles.navbar} >
