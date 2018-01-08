@@ -25,6 +25,7 @@
 		240A7C141FE2A51400DA5D14 /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 240A7C131FE2A51400DA5D14 /* libicucore.tbd */; };
 		24708CFE1FE25CD50064DAAA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24708CFD1FE25CD50064DAAA /* AppDelegate.swift */; };
 		24708D061FE25DDF0064DAAA /* libReactNativeNavigation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 24708D041FE25DC70064DAAA /* libReactNativeNavigation.a */; };
+		249F5AA22003813D00354A07 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 249F5AA12003813D00354A07 /* GoogleService-Info.plist */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
@@ -344,6 +345,7 @@
 		24708CFC1FE25CD40064DAAA /* LetsChat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LetsChat-Bridging-Header.h"; sourceTree = "<group>"; };
 		24708CFD1FE25CD50064DAAA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		24708CFF1FE25DC70064DAAA /* ReactNativeNavigation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeNavigation.xcodeproj; path = "../node_modules/react-native-navigation/ios/ReactNativeNavigation.xcodeproj"; sourceTree = "<group>"; };
+		249F5AA12003813D00354A07 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		469B462FCF0633396B10B16C /* Pods_LetsChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LetsChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		70E73015989B4C04B9A71963 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
@@ -481,6 +483,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				240A7BFD1FE29F9600DA5D14 /* GoogleService-Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
+				249F5AA12003813D00354A07 /* GoogleService-Info.plist */,
 				24708CFD1FE25CD50064DAAA /* AppDelegate.swift */,
 				24708CFC1FE25CD40064DAAA /* LetsChat-Bridging-Header.h */,
 			);
@@ -1068,6 +1071,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				249F5AA22003813D00354A07 /* GoogleService-Info.plist in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				240A7BFE1FE29F9600DA5D14 /* GoogleService-Info.plist in Resources */,
 			);

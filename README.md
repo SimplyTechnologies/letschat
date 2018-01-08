@@ -1,5 +1,11 @@
+<h1 align="center">
+  <img src="https://user-images.githubusercontent.com/13334788/34674675-41d71bb6-f4a0-11e7-9ebd-4fdc4a130121.png"/><br>
+</h1>
+
+
+
 # LetsChat
-A React Native example chat app using [Firebase](https://firebase.google.com/).
+A React Native example chat app using based on [Firebase](https://firebase.google.com/).
 
 ## Getting Started
 
@@ -13,13 +19,13 @@ A React Native example chat app using [Firebase](https://firebase.google.com/).
     ```
     npm install
     ```
+    or
     ##### yarn
     ```
     yarn install
     ```
-4. In `~./LetsChat/ios` folder
+4. In `ios` folder run
 
-    ##### cocoapods
     ```
     pod install
     ```
@@ -49,6 +55,5 @@ To do this you'll need a Firebase project and a Firebase configuration file for 
 </h1>
 
 Visit [here](https://firebase.google.com/docs/ios/setup) for more information.
-
 
 If you run into issues starting the apps please refer to the [React Native docs](https://facebook.github.io/react-native/docs/getting-started.html). It's most likely a problem with your environment.
