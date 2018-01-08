@@ -8,9 +8,7 @@ import {
   View,
   FlatList,
   AlertIOS,
-  PermissionsAndroid,
   Platform,
-  NativeModules
 } from 'react-native';
 import { Message, ContactsPickerModal } from 'AppComponents';
 import { WINDOW_WIDTH } from 'AppConstants';

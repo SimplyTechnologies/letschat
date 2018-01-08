@@ -9,12 +9,11 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
-  AlertIOS,
   Platform,
   Modal
 } from 'react-native';
 import { Contact } from './Contact';
-import { WINDOW_WIDTH, NAVBAR_HEIGHT, STATUSBAR_HEIGHT } from 'AppConstants';
+import { WINDOW_WIDTH, NAVBAR_HEIGHT } from 'AppConstants';
 import { requestContactsPermission, getContacts } from 'AppUtilities';
 import { BACKGROUND_GRAY, HUE_GRAY } from 'AppColors';
 import { isEmpty } from 'lodash';
@@ -65,7 +64,6 @@ class ContactsPickerModal extends Component {
       };
 
       this.contacts = [];
-      this.selectedContacts = [];
     }
 
     componentWillReceiveProps(nextProps) {
