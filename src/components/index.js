@@ -9,3 +9,4 @@ export { AutoGrowInput } from './AutoGrowInput';
 export { SendRow } from './SendRow';
 export { Loading } from './Loading';
 export { AlertPrompt } from './AlertPrompt';
+export { ContactsPickerModal } from './ContactsPickerModal';

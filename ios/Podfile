@@ -8,4 +8,6 @@ target 'LetsChat' do
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
 
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
+
 end
