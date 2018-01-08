@@ -8,8 +8,11 @@ import {
   View,
   FlatList,
   AlertIOS,
+  PermissionsAndroid,
+  Platform,
+  NativeModules
 } from 'react-native';
-import { Message } from 'AppComponents';
+import { Message, ContactsPickerModal } from 'AppComponents';
 import { WINDOW_WIDTH } from 'AppConstants';
 import ContactsWrapper from 'react-native-contacts-wrapper';
 import firebase from 'Firebase'; 
@@ -17,6 +20,8 @@ import { startLoginScene } from 'AppNavigator';
 import { getTitleFromUsers } from 'AppUtilities';
 import { BACKGROUND_GRAY } from 'AppColors';
 import { isEmpty, xor } from 'lodash';
+
+const isIOS = Platform.OS === 'ios';
 
 const styles = StyleSheet.create({
   container: {
@@ -43,6 +48,7 @@ class MessageContainer extends Component {
       this.state = {
         messages: [],
         user: props.user || { },
+        isModalVisible: false,
       };
       this.messages = [];
       this.userRef = firebase.usersRef(this.state.user.id);
@@ -87,7 +93,7 @@ class MessageContainer extends Component {
         }
         break;
       case 'ScreenChangedEvent':
-        if (event.id === 'didAppear' && this.isRequestingContacts) {
+        if (event.id === 'didAppear' && this.isRequestingContacts && isIOS) {
           this.startChatIfNeeded(this.selectedContacts);
           this.isRequestingContacts = false;
         }
@@ -326,6 +332,10 @@ class MessageContainer extends Component {
     };
 
     showContactsModal = () => {
+      if (!isIOS) {
+        return this.setState({ isModalVisible: true });
+      }
+
       this.isRequestingContacts = true;
       ContactsWrapper.getContact()
       .then((contacts) => {
@@ -352,6 +362,14 @@ class MessageContainer extends Component {
       });
     };
 
+    onContactsSelect = (contacts = []) => {
+      this.setState({ isModalVisible: false }, () => this.startChatIfNeeded(contacts));
+    };
+
+    onModalClose = () => {
+      this.setState({ isModalVisible: false });
+    };
+
     renderRow = ({ item }) => {
       const title = getTitleFromUsers(item.users.map(user => user.name));
       return (
@@ -368,7 +386,7 @@ class MessageContainer extends Component {
     };
 
     render() {
-      const { messages } = this.state;
+      const { messages, isModalVisible } = this.state;
 
       return (
         <View style={styles.container} >
@@ -378,6 +396,13 @@ class MessageContainer extends Component {
             keyExtractor={this.extractKeys}
             style={styles.list}
           />
+          {!isIOS && (
+            <ContactsPickerModal
+              visible={isModalVisible}
+              onCancel={this.onModalClose}
+              onDone={this.onContactsSelect}
+            />
+          )}
         </View>
       );
     }
