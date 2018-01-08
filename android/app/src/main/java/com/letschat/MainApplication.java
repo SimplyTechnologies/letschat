@@ -2,6 +2,7 @@ package com.letschat;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.WindowManager;
 
 import com.google.firebase.FirebaseApp;
@@ -9,6 +10,7 @@ import com.lynxit.contactswrapper.ContactsWrapperPackage;
 import com.facebook.react.ReactPackage;
 import com.reactnativenavigation.NavigationApplication;
 import com.reactnativenavigation.controllers.ActivityCallbacks;
+import com.rt2zz.reactnativecontacts.ReactNativeContacts;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +29,7 @@ public class MainApplication extends NavigationApplication {
   protected List<ReactPackage> getPackages() {
     return Arrays.<ReactPackage>asList(
             new ContactsWrapperPackage(),
+            new ReactNativeContacts(),
             new RNFirebasePackage(),
             new RNFirebaseAuthPackage(),
             new RNFirebaseDatabasePackage()
@@ -36,6 +39,12 @@ public class MainApplication extends NavigationApplication {
   @Override
   public List<ReactPackage> createAdditionalReactPackages() {
     return getPackages();
+  }
+
+  @Nullable
+  @Override
+  public String getJSMainModuleName() {
+    return "index";
   }
 
   @Override
