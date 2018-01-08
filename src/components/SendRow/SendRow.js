@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
@@ -34,8 +36,31 @@ const styles = StyleSheet.create({
   },
 });
 
+type Props = {
+  insertMessage: Function,
+  onBlur: ?Function,
+  autoFocus: ?boolean,
+  defaultValue: ?string,
+  onChangeText: ?((text: string) => void)
+  onEndEditing: ?Function,
+  style: ?(number | {}),
+  textInputStyle: ?(number | {}),
+  onFocus: ?Function,
+  initialValue: ?string
+};
 
-class SendRow extends Component {
+type State = {
+  showSend: boolean,
+  inputText: string,
+  rowHeight: number,
+  initialValueSet: ?string,
+  prevValue: ?string,
+};
+
+
+class SendRow extends Component<Props, State> {
+  _textInputRef: TextInput;
+
   static propTypes = {
     insertMessage: PropTypes.func.isRequired,
     onBlur: PropTypes.func,
@@ -110,7 +135,7 @@ class SendRow extends Component {
         <AutoGrowInput
           ref={ref => this._textInputRef = ref}
           underlineColorAndroid={'transparent'}
-          onEndEditing={() => this.props.onEndEditing()}
+          onEndEditing={this.props.onEndEditing}
           placeholder="Write a message..."
           minHeight={30}
           style={[styles.input, textInputStyle]}

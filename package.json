@@ -5,6 +5,7 @@
   "scripts": {
     "clean": "npm start -- --reset-cache",
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "flow": "./node_modules/flow-bin/cli.js",
     "test": "jest"
   },
   "dependencies": {
@@ -21,7 +22,7 @@
   "devDependencies": {
     "babel-jest": "21.2.0",
     "babel-preset-react-native": "4.0.0",
-    "flow-bin": "0.53.1",
+    "flow-bin": "0.57.1",
     "flow-typed": "2.1.5",
     "jest": "21.2.1",
     "react-test-renderer": "16.0.0"

@@ -1,3 +1,5 @@
+// @flow
+
 import firebase from 'react-native-firebase';
 
 class Firebase {
@@ -12,14 +14,14 @@ class Firebase {
 
     roomsRef = (path) => {
       if (!path) {
-        return this.firebaseApp().database().ref('rooms');  
+        return this.firebaseApp().database().ref('rooms');
       }
       return this.firebaseApp().database().ref(`rooms/${path}`);
     };
 
     messagesRef = (path) => {
       if (!path) {
-        return this.firebaseApp().database().ref(`messages`);  
+        return this.firebaseApp().database().ref(`messages`);
       }
       return this.firebaseApp().database().ref(`messages/${path}`);
     };

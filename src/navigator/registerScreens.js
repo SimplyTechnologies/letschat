@@ -7,7 +7,7 @@ import * as ScreenNames from './constants';
 
 const Scenes = { ...AppScenes };
 
-export default function initializeScreens(): void {
+export default function initializeScreens() {
   const hasOwn = Object.prototype.hasOwnProperty;
 
   for (const key in ScreenNames) {
