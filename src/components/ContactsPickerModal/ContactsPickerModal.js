@@ -1,4 +1,3 @@
-
 // @flow
 
 import React, { Component } from 'react';
@@ -50,14 +49,35 @@ const styles = StyleSheet.create({
   },
 });
 
-class ContactsPickerModal extends Component {
-    static propTypes = {
-      visible: PropTypes.bool,
-      onDone: PropTypes.func.isRequired,
-      onCancel: PropTypes.func.isRequired,
-    };
+type ContactType = {
+  phoneNumbers: Array<{
+    number: string
+  }>,
+  givenName: string,
+  recordID: string
+};
 
-    constructor(props, context) {
+type SContactType = {
+	name: $PropertyType<ContactType, 'givenName'>,
+	phone: ?string,
+	id: $PropertyType<ContactType, 'recordID'>,
+	selected: boolean
+};
+
+type State = {
+  contacts: Array<SContactType>
+};
+
+type Props = {
+  visible: ?boolean,
+  onDone: (arg: $PropertyType<State, 'contacts'>) => void,
+  onCancel: () => void
+};
+
+class ContactsPickerModal extends Component<Props, State> {
+	contacts: Array<SContactType>;
+
+    constructor(props: Props, context: mixed) {
       super(props, context);
       this.state = {
         contacts: [],
@@ -66,7 +86,7 @@ class ContactsPickerModal extends Component {
       this.contacts = [];
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: Props) {
       if (nextProps.visible && !this.props.visible) {
         this.getContacts();
       }
@@ -77,21 +97,26 @@ class ContactsPickerModal extends Component {
         return;
       }
       requestContactsPermission()
-      .then(() => getContacts())
-      .then(contacts => this.setContacts(contacts));
+        .then(() => getContacts())
+        .then(contacts => this.setContacts(contacts));
     };
 
-    setContacts = (contacts = []) => {
+    setContacts = (contacts: Array<ContactType> = []) => {
       this.contacts = contacts.map(contact => {
         const phone = !isEmpty(contact.phoneNumbers)
-        ? contact.phoneNumbers[0].number
-        : null;
-        return { name: contact.givenName, phone, id: contact.recordID, selected: false };
+          ? contact.phoneNumbers[0].number
+          : null;
+        return {
+          name: contact.givenName,
+          phone,
+          id: contact.recordID,
+          selected: false
+        };
       }).filter(contact => !!contact.phone);
       this.setState({ contacts: this.contacts });
     };
 
-    onContactPress = (item) => {
+    onContactPress = (item: SContactType) => {
       this.contacts = this.contacts.map(contact => {
         if (contact.id === item.id) {
           contact.selected = !contact.selected;
@@ -112,11 +137,11 @@ class ContactsPickerModal extends Component {
       this.props.onCancel();
     };
 
-    extractKeys = (item) => {
+    extractKeys = (item: SContactType) => {
       return item.id;
     };
 
-    renderRow = ({ item }) => {
+    renderRow = ({ item }: { item: SContactType }) => {
       return (
         <Contact
           contact={item}

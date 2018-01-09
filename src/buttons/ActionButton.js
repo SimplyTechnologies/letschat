@@ -42,6 +42,8 @@ type Props = {
   upperCase: boolean
 }
 
+const emptyFn = () => null;
+
 export function ActionButton({
   isActive,
   showActiveBorder,
@@ -53,15 +55,23 @@ export function ActionButton({
   onPress,
   onPressIn,
 }: Props) {
-  const buttonLabel = upperCase ? label.toUpperCase() : label;
-  const activeBorderStyle = isActive && showActiveBorder ? { borderColor: activeColor } : {};
-  const activeLabelStyle = isActive ? { color: activeColor } : {};
+  const buttonLabel = upperCase
+    ? label.toUpperCase()
+    : label;
+
+  const activeBorderStyle = (isActive && showActiveBorder)
+    ? { borderColor: activeColor }
+    : {};
+
+  const activeLabelStyle = isActive
+    ? { color: activeColor }
+    : {};
 
   return (
     <TouchableOpacity
       disabled={!isActive}
-      onPressIn={() => onPressIn && onPressIn()}
-      onPress={() => isActive && onPress()}
+      onPressIn={onPressIn ? onPressIn : emptyFn}
+      onPress={isActive ? onPress : emptyFn}
       style={[styles.button, activeBorderStyle, style]}
     >
       <View style={styles.container}>

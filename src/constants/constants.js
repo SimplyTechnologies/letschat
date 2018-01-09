@@ -1,15 +1,21 @@
-import { Dimensions } from 'react-native';
-const { width, height } = Dimensions.get('window');
+// @flow
 
+import { Dimensions } from 'react-native';
+
+export type CountryCode = {
+  name: string,
+  code: string
+};
+
+const { width, height } = Dimensions.get('window');
 
 export const WINDOW_WIDTH = width;
 export const WINDOW_HEIGHT = height;
 export const STATUSBAR_HEIGHT = 20;
 export const NAVBAR_HEIGHT = 44;
-
 export const SEND_ROW_DEFAULT_HEIGHT = 60;
 
-export const COUNTRIES = [
+export const COUNTRIES: Array<CountryCode> = [
    { name: 'Afghanistan', code: '+93' },
    { name: 'Aland Islands', code: '+358' },
    { name: 'Albania', code: '+355' },

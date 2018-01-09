@@ -14,6 +14,7 @@ import {
 import firebase from 'Firebase'; 
 import { Login, DialCodesModal, AlertPrompt } from 'AppComponents';
 import { WINDOW_WIDTH } from 'AppConstants';
+import type { CountryCode } from 'AppConstants';
 import { startApp } from 'AppNavigator';
 
 const isIOS = Platform.OS === 'ios';
@@ -28,7 +29,25 @@ const styles = StyleSheet.create({
   }
 });
 
+type Props = {
+  routeSignup: Function,
+  routeLogin: Function,
+  togglePlay: Function
+};
+type State = {
+  isModalVisible: boolean,
+  selectedCountry: ?CountryCode,
+  isPromtVisible: boolean
+};
+type AuthRequest = {
+  confirm: (code: string) => Promise<*>
+};
+
 export class LoginContainer extends React.Component<Props, State> {
+  name: ?string;
+  phone: ?string;
+  auth: ?AuthRequest;
+
   constructor(props: Props, context: mixed) {
     super(props, context);
 
@@ -43,7 +62,7 @@ export class LoginContainer extends React.Component<Props, State> {
     this.phone = null;
   }
 
-  handleSignIn = ({ name, phone }) => {
+  handleSignIn = ({ name, phone }: { name: string, phone: string }) => {
     const { selectedCountry } = this.state;
     if (!phone || !selectedCountry) {
       return;
@@ -53,7 +72,7 @@ export class LoginContainer extends React.Component<Props, State> {
     this.name = !!name ? name : this.phone;
 
     firebase.requestAuthenticationCode(selectedCountry.code, phone)
-    .then(res => {
+    .then((res: AuthRequest) => {
       this.auth = res;
       this.showAlert();
     })
@@ -85,7 +104,7 @@ export class LoginContainer extends React.Component<Props, State> {
     );
   };
 
-  confirm = (code) => {
+  confirm = (code: string) => {
     if (!this.auth) {
       return;
     }
@@ -119,7 +138,7 @@ export class LoginContainer extends React.Component<Props, State> {
     this.setState({ isModalVisible: true });
   };
 
-  onCountryCodeSelect = (country) => {
+  onCountryCodeSelect = (country: CountryCode) => {
     this.setState({ selectedCountry: country, isModalVisible: false });
   };
 

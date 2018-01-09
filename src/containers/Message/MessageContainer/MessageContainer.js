@@ -1,7 +1,7 @@
 
 // @flow
 
-import React, { Component } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import {
   StyleSheet,
@@ -12,12 +12,14 @@ import {
 } from 'react-native';
 import { Message, ContactsPickerModal } from 'AppComponents';
 import { WINDOW_WIDTH } from 'AppConstants';
+import type { Contact } from 'AppConstants';
 import ContactsWrapper from 'react-native-contacts-wrapper';
 import firebase from 'Firebase'; 
 import { startLoginScene } from 'AppNavigator';
 import { getTitleFromUsers } from 'AppUtilities';
 import { BACKGROUND_GRAY } from 'AppColors';
 import { isEmpty, xor } from 'lodash';
+import type { User, Message, Room, NavigationEvent, FirebaseSnapshot } from 'AppTypes';
 
 const isIOS = Platform.OS === 'ios';
 
@@ -35,11 +37,22 @@ const styles = StyleSheet.create({
   }
 });
 
-class MessageContainer extends Component {
-    static propTypes = {
-      navigator: PropTypes.object,
-      user: PropTypes.object,
-    };
+type Props = {
+  navigator: any,
+  user: User
+};
+type State = {
+  messages: Array<Message>
+  user: User | {},
+  isModalVisible: boolean
+};
+
+class MessageContainer extends React.Component<Props, State> {
+    messages: Array<Message>;
+    userRef: any;
+    roomRefs: Array<*>;
+    isRequestingContacts: boolean;
+    selectedContacts: Array<Contact>
 
     constructor(props, context) {
       super(props, context);
@@ -78,7 +91,7 @@ class MessageContainer extends Component {
       });
     }
 
-    onNavigatorEvent = (event) => {
+    onNavigatorEvent = (event: NavigationEvent) => {
       switch (event.type) {
       case 'NavBarButtonPress':
         if (event.id === 'add') {
@@ -105,7 +118,7 @@ class MessageContainer extends Component {
       this.userRef.on('value', this.onUserChange);
     };
 
-    getInitialRooms = (user) => {
+    getInitialRooms = (user: User) => {
       if (!user.roomIds) {
         return Promise.resolve();
       }
@@ -142,7 +155,7 @@ class MessageContainer extends Component {
       });
     };
 
-    addRoomListener = (roomId) => {
+    addRoomListener = (roomId: string) => {
       const ref = {
         id: roomId,
         roomRef: firebase.roomsRef(roomId),
@@ -154,7 +167,7 @@ class MessageContainer extends Component {
       ref.roomRef.on('value', this.updateRoomIfNeeded);
     };
 
-    updateRoomIfNeeded = (snapshot) => {
+    updateRoomIfNeeded = (snapshot: FirebaseSnapshot) => {
       const val = snapshot.val();      
       if (!val) { // Room has been removed.
         const roomId = snapshot.key;
@@ -349,7 +362,7 @@ class MessageContainer extends Component {
       this.routeToChat(title, { room: item, user: this.state.user });
     };
 
-    routeToChat = (title, passProps) => {
+    routeToChat = (title: string, passProps: {}) => {
       this.props.navigator.push({
         screen: 'app.ChatScene',
         title,
@@ -360,7 +373,7 @@ class MessageContainer extends Component {
       });
     };
 
-    onContactsSelect = (contacts = []) => {
+    onContactsSelect = (contacts: Array<Contact> = []) => {
       this.setState({ isModalVisible: false }, () => this.startChatIfNeeded(contacts));
     };
 
@@ -368,7 +381,7 @@ class MessageContainer extends Component {
       this.setState({ isModalVisible: false });
     };
 
-    renderRow = ({ item }) => {
+    renderRow = ({ item }: { item: MEssage }) => {
       const title = getTitleFromUsers(item.users.map(user => user.name));
       return (
         <Message
@@ -379,7 +392,7 @@ class MessageContainer extends Component {
       );
     };
 
-    extractKeys = (item: Object): string => {
+    extractKeys = (item: Message): string => {
       return item.id;
     };
 

@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import { Chat, SendRow, Loading } from 'AppComponents';
 import { SEND_ROW_DEFAULT_HEIGHT } from 'AppConstants';
+import type { Contact } from 'AppConstants';
 import { BACKGROUND_GRAY } from 'AppColors';
 import firebase from 'Firebase'; 
+import type { User, Room } from 'AppTypes';
 import { isEmpty } from 'lodash';
 
 const isIOS = Platform.OS === 'ios';
@@ -33,7 +35,35 @@ const styles = StyleSheet.create({
   }
 });
 
-class ChatContainer extends Component {
+type Message = {
+  author: string,
+  text: string,
+  created: number
+};
+
+type Props = {
+  room: ?Room,
+  contacts: Array<Contact>,
+  navigator: any,
+  user: User
+};
+type State = {
+  messages: Array<Message>,
+  loading: boolean,
+  room: Room & {
+    users: Array<User>,
+    message: Message
+  }
+};
+
+class ChatContainer extends Component<Props, State> {
+  messages: Array<Message>;
+  loading: boolean;
+  hasMoreToLoad: boolean;
+  listChunkSize: number;
+  messageRef: any;
+  sendRowRef: SendRow;
+
     static propTypes = {
       room: PropTypes.object,
       contacts: PropTypes.array,
@@ -41,7 +71,8 @@ class ChatContainer extends Component {
       user: PropTypes.object,
     };
   
-    constructor(props, context) {
+    constructor(props: Props, context: mixed) {
+
       super(props, context);
       this.state = {
         messages: [],
@@ -52,7 +83,10 @@ class ChatContainer extends Component {
       };
 
       this.messages = [];
-      this.messagesRef = this.state.roomId ? firebase.messagesRef(this.state.roomId) : null;
+      this.messagesRef = this.state.roomId
+        ? firebase.messagesRef(this.state.roomId)
+        : null;
+
       this.sendRowRef = null;
 
       this.loading = false;
@@ -151,7 +185,7 @@ class ChatContainer extends Component {
       });
     };
 
-    getUsers = (room) => {
+    getUsers = (room: Room): Promise<Array<User>> => {
       if (!room.participants) {
         return Promise.resolve([]);
       }
@@ -211,7 +245,7 @@ class ChatContainer extends Component {
       this.createNewRoom(msg);
     };
 
-    createNewRoom = (message) => {
+    createNewRoom = (message: Message) => {
       const msg = { ...message };
       const { contacts } = this.props;
       const roomsRef = firebase.roomsRef();
@@ -255,7 +289,7 @@ class ChatContainer extends Component {
       );
     };
 
-    renderRow = ({ item }) => {
+    renderRow = ({ item }: { item: Message }) => {
       const isOwn = item.author === this.props.user.id;
       const user = this.state.users.find(user => user.id === item.author);
       return (
@@ -268,7 +302,7 @@ class ChatContainer extends Component {
       );
     };
 
-    extractKeys = (item: Object): string => {
+    extractKeys = (item: Message): string => {
       return item.id;
     };
 

@@ -1,3 +1,5 @@
+// @flow
+
 export const TRANSPARENT = 'transparent';
 export const BLUE = '#298FE1';
 export const LIGHT_BLUE = '#85b2f6';

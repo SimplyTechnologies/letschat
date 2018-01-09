@@ -1,6 +1,5 @@
 // @flow
 
-
 import { Navigation } from 'react-native-navigation';
 import {
   LOGIN_SCENE,
