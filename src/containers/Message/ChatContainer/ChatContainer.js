@@ -43,7 +43,7 @@ type Message = {
 
 type Props = {
   room: ?Room,
-  contacts: VBArrayConstructor<Contact>,
+  contacts: Array<Contact>,
   navigator: any,
   user: User
 };
