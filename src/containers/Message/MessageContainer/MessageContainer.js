@@ -19,7 +19,7 @@ import { startLoginScene } from 'AppNavigator';
 import { getTitleFromUsers } from 'AppUtilities';
 import { BACKGROUND_GRAY } from 'AppColors';
 import { isEmpty, xor } from 'lodash';
-import type { User, Message, Room, NavigationEvent, FirebaseSnapshot } from 'AppTypes';
+import type { User, Message as MessageType, Room, NavigationEvent, FirebaseSnapshot } from 'AppTypes';
 
 const isIOS = Platform.OS === 'ios';
 
@@ -42,13 +42,13 @@ type Props = {
   user: User
 };
 type State = {
-  messages: Array<Message>
+  messages: Array<MessageType>,
   user: User | {},
   isModalVisible: boolean
 };
 
 class MessageContainer extends React.Component<Props, State> {
-    messages: Array<Message>;
+    messages: Array<MessageType>;
     userRef: any;
     roomRefs: Array<*>;
     isRequestingContacts: boolean;
@@ -203,7 +203,7 @@ class MessageContainer extends React.Component<Props, State> {
       });
     };
 
-    setMessages = (messages) => {
+    setMessages = (messages: Array<MessageType>) => {
       this.messages = messages.reduce((prevMessages, message) => {
         if (prevMessages.some(msg => msg.id === message.id)) {
           return prevMessages;
@@ -216,11 +216,11 @@ class MessageContainer extends React.Component<Props, State> {
       this.setState({ messages: this.messages });
     };
 
-    isRoomChanged = (oldRoom, newRoom) => {
+    isRoomChanged = (oldRoom: Room, newRoom: Room) => {
       return oldRoom.lastMessage !== newRoom.lastMessage;
     };
 
-    getMessageById = (roomId, messageId) => {
+    getMessageById = (roomId: string, messageId: string) => {
       return new Promise((resolve, reject) => {
         firebase.messagesRef().child(roomId).child(messageId)
         .once('value', snapshot => {
@@ -233,7 +233,7 @@ class MessageContainer extends React.Component<Props, State> {
       });
     };
 
-    getRoomUsers = (room) => {
+    getRoomUsers = (room: Room) => {
       if (!room.participants) {
         return Promise.resolve([]);
       }

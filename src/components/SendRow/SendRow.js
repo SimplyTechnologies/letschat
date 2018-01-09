@@ -41,7 +41,7 @@ type Props = {
   onBlur: ?Function,
   autoFocus: ?boolean,
   defaultValue: ?string,
-  onChangeText: ?((text: string) => void)
+  onChangeText: ?((text: string) => void),
   onEndEditing: ?Function,
   style: ?(number | {}),
   textInputStyle: ?(number | {}),
