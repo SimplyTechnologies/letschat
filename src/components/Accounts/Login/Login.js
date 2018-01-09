@@ -12,12 +12,12 @@ import { WINDOW_WIDTH } from 'AppConstants';
 import { ActionButton } from 'AppButtons';
 import { LIGHT_BLUE, LIGHT_GRAY, GRAY } from 'AppColors';
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard';
-
+import type { Contact } from 'AppConstants';
 type Props = {
   onCountryCodePress: Function,
-  selectedCountry: object,
-  handleSignIn: (code: string) => void,
-}
+  selectedCountry: Contact,
+  handleSignIn: ({ name: ?string, phone: ?string }) => void,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -71,7 +71,9 @@ const styles = StyleSheet.create({
   }
 });
 
-class Login extends React.Component<Props, State> {
+class Login extends React.Component<Props, void> {
+  phone: ?string;
+  name: ?string;
 
   constructor(props: Props, context: mixed) {
     super(props, context);
@@ -80,7 +82,7 @@ class Login extends React.Component<Props, State> {
     this.name = null;
   }
 
-  onChangeText = (text, index) => {
+  onChangeText = (text: string, index: 0 | 1) => {
     switch (index) {
       case 0:
         this.name = text;
@@ -105,8 +107,8 @@ class Login extends React.Component<Props, State> {
     const { selectedCountry, onCountryCodePress } = this.props;
 
     const phone = !!selectedCountry
-    ? selectedCountry.code + ' ' + selectedCountry.name
-    : '';
+      ? selectedCountry.code + ' ' + selectedCountry.name
+      : '';
 
     return (
       <TouchableWithoutFeedback style={styles.container} onPress={dismissKeyboard}>

@@ -2,7 +2,7 @@
 
 import { Dimensions } from 'react-native';
 
-type CountriesCode = {
+export type CountryCode = {
   name: string,
   code: string
 };
@@ -15,7 +15,7 @@ export const STATUSBAR_HEIGHT = 20;
 export const NAVBAR_HEIGHT = 44;
 export const SEND_ROW_DEFAULT_HEIGHT = 60;
 
-export const COUNTRIES: Array<CountriesCode> = [
+export const COUNTRIES: Array<CountryCode> = [
    { name: 'Afghanistan', code: '+93' },
    { name: 'Aland Islands', code: '+358' },
    { name: 'Albania', code: '+355' },

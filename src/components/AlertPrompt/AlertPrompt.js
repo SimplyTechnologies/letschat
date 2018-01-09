@@ -13,14 +13,14 @@ import { LIGHT_BLUE, LIGHT_GRAY, GRAY } from 'AppColors';
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard';
 
 type Props = {
-  onCancel: Function,
+  onCancel: () => void,
   onSubmit: (code: string) => void,
   cancelText: ?string,
   submitText: ?string,
   title: ?string,
   message: ?string,
   visible: boolean
-}
+};
 
 const height = WINDOW_WIDTH * 0.4;
 const width = WINDOW_WIDTH * 0.75;
@@ -91,7 +91,9 @@ const styles = StyleSheet.create({
   }
 });
 
-class AlertPrompt extends React.Component<Props, State> {
+class AlertPrompt extends React.Component<Props, void> {
+  inputRef: ?TextInput;
+  text: string;
 
   constructor(props: Props, context: mixed) {
     super(props, context);
@@ -100,7 +102,7 @@ class AlertPrompt extends React.Component<Props, State> {
     this.text = '';
   }
 
-  onChangeText = (text) => {
+  onChangeText = (text: string) => {
     this.text = text;
   };
 
@@ -113,6 +115,8 @@ class AlertPrompt extends React.Component<Props, State> {
     dismissKeyboard();
     if (this.props.onSubmit) {
       this.props.onSubmit(this.text);
+    }
+    if (this.inputRef) {
       this.inputRef.clear();
     }
   };
