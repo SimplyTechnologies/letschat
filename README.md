@@ -54,6 +54,6 @@ To do this you'll need a Firebase project and a Firebase configuration file for 
   <img src="./readme_assets/info_plist.png"/><br>
 </h1>
 
-Visit [here](https://firebase.google.com/docs/ios/setup) for more information.
+Click [here](https://firebase.google.com/docs/ios/setup) for more information.
 
 If you run into issues starting the apps please refer to the [React Native docs](https://facebook.github.io/react-native/docs/getting-started.html). It's most likely a problem with your environment.
