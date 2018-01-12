@@ -28,7 +28,7 @@ export function startLoginScene() {
   });
 }
 
-export function startApp(passProps) {
+export function startApp(passProps?: {}) {
   Navigation.startSingleScreenApp({
     screen: {
       screen: MESSAGE_SCENE,

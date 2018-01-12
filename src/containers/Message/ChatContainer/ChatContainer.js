@@ -57,22 +57,14 @@ type State = {
 };
 
 class ChatContainer extends Component<Props, State> {
-  messages: Array<Message>;
-  loading: boolean;
-  hasMoreToLoad: boolean;
-  listChunkSize: number;
-  messageRef: any;
-  sendRowRef: SendRow;
-
-    static propTypes = {
-      room: PropTypes.object,
-      contacts: PropTypes.array,
-      navigator: PropTypes.object,
-      user: PropTypes.object,
-    };
+  	messages: Array<Message>;
+  	loading: boolean;
+  	hasMoreToLoad: boolean;
+  	listChunkSize: number;
+  	messageRef: any;
+  	sendRowRef: SendRow;
   
     constructor(props: Props, context: mixed) {
-
       super(props, context);
       this.state = {
         messages: [],

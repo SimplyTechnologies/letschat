@@ -1,18 +1,25 @@
+// @flow
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ChatContainer } from 'AppContainers';
+import type { User, Room } from 'AppTypes';
+import type { Contact } from 'AppConstants';
 
-class ChatScene extends Component {
+type Props = {
+  navigator: any,
+  room: Room,
+  contacts: Array<Contact>,
+  user: User
+};
+
+class ChatScene extends Component<Props> {
   static propTypes = {
     navigator: PropTypes.object,
     room: PropTypes.object,
     contacts: PropTypes.array,
     user: PropTypes.object,
   };
-
-  constructor(props, context) {
-    super(props, context);
-  }
 
   render() {
     const { navigator, room, contacts, user } = this.props;

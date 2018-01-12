@@ -54,11 +54,11 @@ class MessageContainer extends React.Component<Props, State> {
     isRequestingContacts: boolean;
     selectedContacts: Array<Contact>
 
-    constructor(props, context) {
+    constructor(props: Props, context: mixed) {
       super(props, context);
       this.state = {
         messages: [],
-        user: props.user || { },
+        user: props.user,
         isModalVisible: false,
       };
       this.messages = [];
@@ -118,7 +118,7 @@ class MessageContainer extends React.Component<Props, State> {
       this.userRef.on('value', this.onUserChange);
     };
 
-    getInitialRooms = (user: User) => {
+    getInitialRooms = (user: User): Promise<*> => {
       if (!user.roomIds) {
         return Promise.resolve();
       }
@@ -167,29 +167,33 @@ class MessageContainer extends React.Component<Props, State> {
       ref.roomRef.on('value', this.updateRoomIfNeeded);
     };
 
-    updateRoomIfNeeded = (snapshot: FirebaseSnapshot) => {
+    updateRoomIfNeeded = (snapshot: FirebaseSnapshot): Promise<*> => {
       const val = snapshot.val();      
       if (!val) { // Room has been removed.
         const roomId = snapshot.key;
         this.messages = this.messages.filter(room => room.id !== roomId);
-        return this.setState({ messages: Object.assign([], this.messages)});
+        return this.setState({
+          messages: [...this.messages]
+        });
       }
 
-      const existingRoom = this.messages.find(message => message.id === val.id);
+      const existingRoom = this.messages
+        .find(message => message.id === val.id);
+
       if (existingRoom) {
         if (!this.isRoomChanged(existingRoom, val)) {
           return;
         }
         return this.getMessageById(val.messageId, val.lastMessage)
-        .then(lastMessage => {
-          this.messages = this.messages.map(message => {
-            if (message.id !== existingRoom.id) {
-              return message;
-            }
-            return Object.assign({}, message, { message: lastMessage, updated: val.updated });
+          .then(lastMessage => {
+            this.messages = this.messages.map(message => {
+              if (message.id !== existingRoom.id) {
+                return message;
+              }
+              return Object.assign({}, message, { message: lastMessage, updated: val.updated });
+            });
+            this.setMessages(this.messages);
           });
-          this.setMessages(this.messages);
-        });
       }
 
       const room = { ...snapshot.val(), id: snapshot.key };
@@ -326,14 +330,15 @@ class MessageContainer extends React.Component<Props, State> {
       .catch(err => console.warn('Error checking contacts', err));
     };
 
-    checkIfChatExists = (users) => {
-      const contains = (participants, _users) => (
-        isEmpty(xor(participants, _users))
-      );
+    checkIfChatExists = (users: Array<User>) => {
+      const contains = (participants, _users) =>
+        isEmpty(xor(participants, _users));
 
       var existingRoom = null;
       this.messages.forEach(room => {
-        const participants = room.participants.filter(par => par !== this.state.user.id);
+        const participants = room.participants
+          .filter(par => par !== this.state.user.id);
+
         const _users = users.map(user => user.id);
         if (contains(participants, _users)) {
           existingRoom = room;
@@ -357,7 +362,7 @@ class MessageContainer extends React.Component<Props, State> {
       });
     };
 
-    onMessagePress = (item) => {
+    onMessagePress = (item: MessageType) => {
       const title = getTitleFromUsers(item.users.map(user => user.name));
       this.routeToChat(title, { room: item, user: this.state.user });
     };
@@ -381,7 +386,7 @@ class MessageContainer extends React.Component<Props, State> {
       this.setState({ isModalVisible: false });
     };
 
-    renderRow = ({ item }: { item: MEssage }) => {
+    renderRow = ({ item }: { item: MessageType }) => {
       const title = getTitleFromUsers(item.users.map(user => user.name));
       return (
         <Message
@@ -392,7 +397,7 @@ class MessageContainer extends React.Component<Props, State> {
       );
     };
 
-    extractKeys = (item: Message): string => {
+    extractKeys = (item: MessageType): string => {
       return item.id;
     };
 
